@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EnvironmentVariableDefinitions>
+    <!-- Source Database Connection Environment Variable -->
+    <EnvironmentVariableDefinition>
+      <schemaName>envvar_SourceDatabaseConnection</schemaName>
+      <displayName>Source Database Connection</displayName>
+      <type>100000005</type> <!-- Connection Reference type -->
+      <connectionReferenceComponentType>shared_sql</connectionReferenceComponentType>
+      <isRequired>1</isRequired>
+      <description>Connection reference for the source WSSA database on WSWMDWH01 server</description>
+    </EnvironmentVariableDefinition>
+
+    <!-- Target Database Connection Environment Variable -->
+    <EnvironmentVariableDefinition>
+      <schemaName>envvar_TargetDatabaseConnection</schemaName>
+      <displayName>Target Database Connection</displayName>
+      <type>100000005</type> <!-- Connection Reference type -->
+      <connectionReferenceComponentType>shared_sql</connectionReferenceComponentType>
+      <isRequired>1</isRequired>
+      <description>Connection reference for the target WSDWH_R database</description>
+    </EnvironmentVariableDefinition>
+
+    <!-- Dataverse Connection Environment Variable -->
+    <EnvironmentVariableDefinition>
+      <schemaName>envvar_DataverseConnection</schemaName>
+      <displayName>Dataverse Connection</displayName>
+      <type>100000005</type> <!-- Connection Reference type -->
+      <connectionReferenceComponentType>shared_commondataserviceforapps</connectionReferenceComponentType>
+      <isRequired>1</isRequired>
+      <description>Connection reference for Microsoft Dataverse to access custom entities</description>
+    </EnvironmentVariableDefinition>
+  </EnvironmentVariableDefinitions>
+</ImportExportXml>

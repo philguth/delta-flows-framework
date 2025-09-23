@@ -1,0 +1,141 @@
+name: Solution Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate-solution:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Power Platform CLI
+      run: |
+        # Install Power Platform CLI
+        Invoke-WebRequest -Uri "https://aka.ms/PowerPlatformCLI" -OutFile "PowerPlatformCLI.msi"
+        Start-Process msiexec.exe -Wait -ArgumentList '/I PowerPlatformCLI.msi /quiet'
+        
+    - name: Validate Solution Structure
+      run: |
+        Write-Host "🔍 Validating solution structure..." -ForegroundColor Yellow
+        
+        # Check required files exist
+        $requiredFiles = @(
+          "solution.xml",
+          "customizations.xml",
+          "[Content_Types].xml",
+          "README.md",
+          "DEPLOYMENT_GUIDE.md",
+          "ENVIRONMENT_VARIABLES_SETUP.md",
+          "Setup-EnvironmentVariables.ps1"
+        )
+        
+        $missingFiles = @()
+        foreach ($file in $requiredFiles) {
+          if (-not (Test-Path $file)) {
+            $missingFiles += $file
+          }
+        }
+        
+        if ($missingFiles.Count -gt 0) {
+          Write-Host "❌ Missing required files:" -ForegroundColor Red
+          $missingFiles | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+          exit 1
+        }
+        
+        Write-Host "✅ All required files present" -ForegroundColor Green
+        
+    - name: Validate Solution XML
+      run: |
+        Write-Host "🔍 Validating solution.xml..." -ForegroundColor Yellow
+        
+        try {
+          [xml]$solutionXml = Get-Content "solution.xml"
+          
+          # Check solution name is not test-related
+          $solutionName = $solutionXml.ImportExportXml.SolutionManifest.UniqueName
+          if ($solutionName -match "test|temp|dev") {
+            Write-Host "❌ Solution name '$solutionName' appears to be for testing/development" -ForegroundColor Red
+            exit 1
+          }
+          
+          # Check version format
+          $version = $solutionXml.ImportExportXml.SolutionManifest.Version
+          if ($version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+            Write-Host "❌ Invalid version format: $version" -ForegroundColor Red
+            exit 1
+          }
+          
+          Write-Host "✅ Solution XML validation passed" -ForegroundColor Green
+          Write-Host "   Solution: $solutionName" -ForegroundColor Gray
+          Write-Host "   Version: $version" -ForegroundColor Gray
+          
+        } catch {
+          Write-Host "❌ Failed to parse solution.xml: $($_.Exception.Message)" -ForegroundColor Red
+          exit 1
+        }
+        
+    - name: Validate PowerShell Scripts
+      run: |
+        Write-Host "🔍 Validating PowerShell scripts..." -ForegroundColor Yellow
+        
+        $scripts = Get-ChildItem -Filter "*.ps1" -Recurse
+        $scriptErrors = @()
+        
+        foreach ($script in $scripts) {
+          try {
+            $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $script.FullName -Raw), [ref]$null)
+            Write-Host "✅ $($script.Name) syntax valid" -ForegroundColor Green
+          } catch {
+            $scriptErrors += "$($script.Name): $($_.Exception.Message)"
+            Write-Host "❌ $($script.Name) has syntax errors" -ForegroundColor Red
+          }
+        }
+        
+        if ($scriptErrors.Count -gt 0) {
+          Write-Host "❌ PowerShell script validation failed:" -ForegroundColor Red
+          $scriptErrors | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+          exit 1
+        }
+        
+        Write-Host "✅ All PowerShell scripts valid" -ForegroundColor Green
+        
+    - name: Check Documentation
+      run: |
+        Write-Host "🔍 Validating documentation..." -ForegroundColor Yellow
+        
+        # Check README has required sections
+        $readme = Get-Content "README.md" -Raw
+        $requiredSections = @(
+          "# Delta Flows",
+          "## Overview", 
+          "## Architecture",
+          "## Quick Start",
+          "## Environment Variables"
+        )
+        
+        $missingSections = @()
+        foreach ($section in $requiredSections) {
+          if ($readme -notmatch [regex]::Escape($section)) {
+            $missingSections += $section
+          }
+        }
+        
+        if ($missingSections.Count -gt 0) {
+          Write-Host "❌ README missing required sections:" -ForegroundColor Red
+          $missingSections | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+          exit 1
+        }
+        
+        Write-Host "✅ Documentation validation passed" -ForegroundColor Green
+        
+    - name: Summary
+      run: |
+        Write-Host "🎉 Solution validation completed successfully!" -ForegroundColor Green
+        Write-Host "The Delta Flows Framework solution is ready for deployment." -ForegroundColor Green

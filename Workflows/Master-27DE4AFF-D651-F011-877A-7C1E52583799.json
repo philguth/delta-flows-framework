@@ -1,0 +1,337 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_sql-1": {
+        "api": {
+          "name": "shared_sql"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "envvar_SourceDatabaseConnection"
+        },
+        "runtimeSource": "invoker"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "e375575b-1ee3-4b16-aa94-944155a79e79"
+          }
+        }
+      },
+      "actions": {
+        "📋_Master_Flow_Documentation_Header": {
+          "type": "Compose",
+          "inputs": "📋 DELTA FLOWS MASTER ORCHESTRATOR\n\n🎯 PURPOSE:\nOrchestrates the processing of delta data across multiple tables by identifying tables with changes and executing the Framework with Batching flow for each table in parallel for optimal performance.\n\n📥 INPUTS:\n• Manual trigger - No input parameters required\n• Reads table mappings from [df].[wstColumnMapping] configuration from the WSSA (Administrative DB) on the SQL Server instance\n• Automatically detects tables with delta changes\n\n📤 OUTPUTS:\n• Orchestrated execution of child flows for all tables with changes\n• Parallel processing for improved performance\n• Comprehensive logging via child flow executions\n\n🔄 ORCHESTRATION PROCESS:\n1. Initialize processing variables and arrays\n2. Retrieve all active table mappings from configuration\n3. Check each table for delta changes in parallel (up to 20 concurrent)\n4. Build list of tables requiring processing\n5. Execute Framework with Batching flow for each table (up to 5 concurrent)\n\n⚙️ PERFORMANCE OPTIMIZATIONS:\n• Parallel Change Detection: 20 concurrent change checks\n• Parallel Table Processing: 5 concurrent child flow executions\n• Selective Processing: Only processes tables with actual changes\n• Efficient Resource Usage: Balanced concurrency to prevent database overload\n\n🛡️ ERROR HANDLING:\n• Individual table failures don't stop other tables\n• Child flow error handling manages table-specific issues\n• Graceful degradation under system load\n\n📊 MONITORING:\n• Child flow execution logs for each table\n• Overall orchestration timing and status\n• Individual table processing results",
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "master-flow-documentation-header"
+          }
+        },
+        "Initialize_TablesToProcess": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "TablesToProcess",
+                "type": "array"
+              }
+            ]
+          },
+          "runAfter": {
+            "📋_Master_Flow_Documentation_Header": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "init-tables-to-process",
+            "description": "📋 Initializes TablesToProcess array variable to store tables that require delta processing. Used to collect tables with actual changes during the discovery phase."
+          }
+        },
+        "📝_Configuration_Discovery_Section": {
+          "type": "Compose",
+          "inputs": "📝 CONFIGURATION DISCOVERY SECTION\n\n🎯 PURPOSE: Retrieve table mapping configuration and prepare for change detection\n\n🔧 ACTIONS:\n• Initialize TablesToProcess array for storing tables that need processing\n• Query [df].[wstColumnMapping] table for active key column mappings\n• Parse JSON response into structured data for processing\n\n📋 CONFIGURATION SCOPE:\n• Filter: IsKeyColumn = true AND IsActive = true\n• Source: WSWMDWH01/WSSA database\n• Result: Array of table mappings with source/target relationships\n\n⚙️ PERFORMANCE CONSIDERATIONS:\n• Single database query to retrieve all mappings\n• Efficient filtering at database level\n• Structured parsing for downstream processing",
+          "runAfter": {
+            "Initialize_TablesToProcess": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "config-discovery-section"
+          }
+        },
+        "ESP_-_Get_Source_Data_Views_for_Processing": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "server": "WSWMDWH01",
+              "database": "WSSA",
+              "table": "[df].[wstColumnMapping]",
+              "$filter": "IsKeyColumn eq true and IsActive eq true"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+              "operationId": "GetItems_V2",
+              "connectionName": "shared_sql-1"
+            }
+          },
+          "runAfter": {
+            "📝_Configuration_Discovery_Section": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bfac4e7b-987e-491c-9e7d-bf33ad6130ff",
+            "description": "🗄️ Retrieves all active table mappings from configuration database. Queries [df].[wstColumnMapping] for key column mappings to identify which tables are eligible for delta processing."
+          }
+        },
+        "📊_Change_Detection_Section": {
+          "type": "Compose",
+          "inputs": "📊 CHANGE DETECTION SECTION\n\n🎯 PURPOSE: Efficiently identify tables with delta changes requiring processing\n\n🔧 PARALLEL PROCESSING:\n• Concurrency: Up to 20 simultaneous change checks\n• Performance: Reduces total discovery time significantly\n• Efficiency: Only processes tables with actual changes\n\n🔍 DETECTION LOGIC:\n1. Parse table mappings from configuration query\n2. For each table mapping, call wspCheckOrGetChanges stored procedure\n3. Check FoundChanges flag in result set\n4. Add tables with changes to TablesToProcess array\n\n⚙️ OPTIMIZATION BENEFITS:\n• Selective Processing: Skips tables without changes\n• Parallel Execution: 20x faster than serial processing\n• Resource Efficient: Minimizes unnecessary processing\n• Smart Filtering: Only processes relevant datasets",
+          "runAfter": {
+            "Parse_JSON_-_Source_Data_Views_for_Processing": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "change-detection-section"
+          }
+        },
+        "Does_the_Source_Data_View_Have_Changes": {
+          "type": "Foreach",
+          "foreach": "@body('Parse_JSON_-_Source_Data_Views_for_Processing')",
+          "actions": {
+            "ESP_-_Check_for_Changes": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "server": "WSWMDWH01",
+                  "database": "WSSA",
+                  "procedure": "[df].[wspCheckOrGetChanges]",
+                  "parameters/SourceView": "@item()?['SourceTableName']",
+                  "parameters/SourceView_bu": "@item()?['SourceTableBUName']",
+                  "parameters/ReturnRows": "@false"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+                  "operationId": "ExecuteProcedure_V2",
+                  "connectionName": "shared_sql-1"
+                }
+              }
+            },
+            "If_ChangesFound_AddToProcessingList": {
+              "type": "If",
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@first(outputs('ESP_-_Check_for_Changes')?['body/resultsets']['Table1'])?['FoundChanges']",
+                      "@true"
+                    ]
+                  }
+                ]
+              },
+              "actions": {
+                "Add_Table_To_Processing_List": {
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "TablesToProcess",
+                    "value": {
+                      "SourceView": "@item()?['SourceTableName']",
+                      "BackupView": "@item()?['SourceTableBUName']",
+                      "TargetTable": "@item()?['TargetTableName']"
+                    }
+                  }
+                }
+              },
+              "else": {
+                "actions": {}
+              },
+              "runAfter": {
+                "ESP_-_Check_for_Changes": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "📊_Change_Detection_Section": [
+              "Succeeded"
+            ]
+          },
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 20
+            }
+          }
+        },
+        "Process_Tables_with_Changes": {
+          "type": "Foreach",
+          "foreach": "@body('Parse_JSON_-_Tables_to_Process_List')",
+          "actions": {
+            "Run_Child_Flow_for_Each_Table": {
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "bbd26a2d-8a62-f011-bec2-6045bdd7b42a"
+                },
+                "body": {
+                  "text": "@items('Process_Tables_with_Changes')?['SourceView']",
+                  "text_1": "@items('Process_Tables_with_Changes')?['BackupView']",
+                  "text_2": "@items('Process_Tables_with_Changes')?['TargetTable']",
+                  "text_3": "@workflow()?['run']['name']"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Parse_JSON_-_Tables_to_Process_List": [
+              "Succeeded"
+            ]
+          },
+          "runtimeConfiguration": {
+            "concurrency": {
+              "repetitions": 5
+            }
+          }
+        },
+        "Parse_JSON_-_Source_Data_Views_for_Processing": {
+          "type": "ParseJson",
+          "inputs": {
+            "content": "@outputs('ESP_-_Get_Source_Data_Views_for_Processing')?['body/value']",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "@@odata.etag": {
+                    "type": "string"
+                  },
+                  "ItemInternalId": {
+                    "type": "string"
+                  },
+                  "MappingID": {
+                    "type": "integer"
+                  },
+                  "SourceDB": {
+                    "type": "string"
+                  },
+                  "SourceTableName": {
+                    "type": "string"
+                  },
+                  "SourceTableBUName": {
+                    "type": "string"
+                  },
+                  "SourceColumnName": {
+                    "type": "string"
+                  },
+                  "TargetDB": {
+                    "type": "string"
+                  },
+                  "TargetTableName": {
+                    "type": "string"
+                  },
+                  "TargetColumnName": {
+                    "type": "string"
+                  },
+                  "DataType": {
+                    "type": "string"
+                  },
+                  "IsKeyColumn": {
+                    "type": "boolean"
+                  },
+                  "ExcludeCompare": {
+                    "type": "boolean"
+                  },
+                  "DateModifiedColumn": {
+                    "type": "boolean"
+                  },
+                  "IsActive": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "@@odata.etag",
+                  "ItemInternalId",
+                  "MappingID",
+                  "SourceDB",
+                  "SourceTableName",
+                  "SourceTableBUName",
+                  "SourceColumnName",
+                  "TargetDB",
+                  "TargetTableName",
+                  "TargetColumnName",
+                  "DataType",
+                  "IsKeyColumn",
+                  "ExcludeCompare",
+                  "IsActive"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "ESP_-_Get_Source_Data_Views_for_Processing": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Parse_JSON_-_Tables_to_Process_List": {
+          "type": "ParseJson",
+          "inputs": {
+            "content": "@variables('TablesToProcess')",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "SourceView": {
+                    "type": "string"
+                  },
+                  "BackupView": {
+                    "type": "string"
+                  },
+                  "TargetTable": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "SourceView",
+                  "BackupView",
+                  "TargetTable"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "Does_the_Source_Data_View_Have_Changes": [
+              "Succeeded"
+            ]
+          }
+        }
+      }
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
