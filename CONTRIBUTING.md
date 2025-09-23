@@ -5,7 +5,7 @@ Thank you for your interest in contributing to the Delta Flows Framework! This g
 ## 🤝 How to Contribute
 
 ### Reporting Issues
-- Use the [Issues](https://github.com/[your-username]/delta-flows-framework/issues) tab to report bugs
+- Use the [Issues](https://github.com/philguth/delta-flows-framework/issues) tab to report bugs
 - Search existing issues before creating a new one
 - Provide detailed information including:
   - Steps to reproduce
@@ -14,7 +14,7 @@ Thank you for your interest in contributing to the Delta Flows Framework! This g
   - Screenshots if applicable
 
 ### Suggesting Enhancements
-- Use the [Discussions](https://github.com/[your-username]/delta-flows-framework/discussions) tab for feature requests
+- Use the [Discussions](https://github.com/philguth/delta-flows-framework/discussions) tab for feature requests
 - Explain the use case and benefits
 - Consider backward compatibility
 
@@ -117,8 +117,8 @@ We use [Semantic Versioning](https://semver.org/):
 
 ## 💬 Communication
 
-- **Questions**: Use [Discussions](https://github.com/[your-username]/delta-flows-framework/discussions)
-- **Bugs**: Use [Issues](https://github.com/[your-username]/delta-flows-framework/issues)
+- **Questions**: Use [Discussions](https://github.com/philguth/delta-flows-framework/discussions)
+- **Bugs**: Use [Issues](https://github.com/philguth/delta-flows-framework/issues)
 - **Security**: Email security@[your-domain].com for security vulnerabilities
 
 ## 📄 Code of Conduct

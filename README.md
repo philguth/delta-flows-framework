@@ -57,7 +57,7 @@ This solution provides:
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/[your-username]/delta-flows-framework.git
+git clone https://github.com/philguth/delta-flows-framework.git
 cd delta-flows-framework
 ```
 
@@ -142,9 +142,9 @@ The solution includes comprehensive logging through:
 ## 📞 Support
 
 For issues, questions, or contributions:
-- Create an [Issue](https://github.com/[your-username]/delta-flows-framework/issues)
-- Submit a [Pull Request](https://github.com/[your-username]/delta-flows-framework/pulls)
-- Check [Discussions](https://github.com/[your-username]/delta-flows-framework/discussions)
+- Create an [Issue](https://github.com/philguth/delta-flows-framework/issues)
+- Submit a [Pull Request](https://github.com/philguth/delta-flows-framework/pulls)
+- Check [Discussions](https://github.com/philguth/delta-flows-framework/discussions)
 
 ## 📄 License
 
