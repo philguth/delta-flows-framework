@@ -47,7 +47,7 @@ git push -u origin main
 ### GitHub Actions Workflow
 - **File**: `.github/workflows/validate-solution.yml`
 - **Triggers**: Push to main/develop, Pull Requests
-- **Validates**: 
+- **Validates**:
   - Solution structure
   - XML syntax
   - PowerShell script syntax

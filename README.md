@@ -36,7 +36,7 @@ This solution provides:
 
 ### Performance Optimizations
 - **Parallel Change Detection**: 20 concurrent change checks
-- **Parallel Table Processing**: 5 concurrent child flow executions  
+- **Parallel Table Processing**: 5 concurrent child flow executions
 - **Selective Processing**: Only processes tables with actual changes
 - **Batching Support**: Efficient handling of large datasets
 
@@ -157,7 +157,7 @@ Current Version: 1.0.0.5
 ## 🎯 Roadmap
 
 - [ ] Azure Key Vault integration
-- [ ] Advanced error handling patterns  
+- [ ] Advanced error handling patterns
 - [ ] Power BI monitoring dashboard
 - [ ] Automated performance tuning
 - [ ] Multi-tenant support
