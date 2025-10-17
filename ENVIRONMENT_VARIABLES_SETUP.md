@@ -8,7 +8,8 @@ This solution now uses **Environment Variables** instead of hardcoded connection
 | Variable Name | Type | Purpose |
 |---------------|------|---------|
 | `envvar_SourceDatabaseConnection` | Connection Reference | WSSA source database connection |
-| `envvar_TargetDatabaseConnection` | Connection Reference | WSDWH_R target database connection |
+| `envvar_TargetDatabaseConnection_SQL90` | Connection Reference | WSDWH_R target database connection (SQL Server 2019/SQL90) |
+| `envvar_TargetDatabaseConnection_SQL83` | Connection Reference | WSDWH_R target database connection (SQL Server 2008/SQL83) |
 | `envvar_DataverseConnection` | Connection Reference | Microsoft Dataverse connection |
 
 ## Security Improvements Made
@@ -71,8 +72,11 @@ After deployment, you need to set the environment variable values to point to yo
 # Set Source Database Connection
 pac env var set --name "envvar_SourceDatabaseConnection" --connection-reference "[source-connection-logical-name]"
 
-# Set Target Database Connection
-pac env var set --name "envvar_TargetDatabaseConnection" --connection-reference "[target-connection-logical-name]"
+# Set Target Database Connection for SQL90 (SQL Server 2019)
+pac env var set --name "envvar_TargetDatabaseConnection_SQL90" --connection-reference "[target-sql90-connection-logical-name]"
+
+# Set Target Database Connection for SQL83 (SQL Server 2008)
+pac env var set --name "envvar_TargetDatabaseConnection_SQL83" --connection-reference "[target-sql83-connection-logical-name]"
 
 # Set Dataverse Connection
 pac env var set --name "envvar_DataverseConnection" --connection-reference "[dataverse-connection-logical-name]"
@@ -85,7 +89,8 @@ pac env var set --name "envvar_DataverseConnection" --connection-reference "[dat
 1. **Go to Power Platform Admin Center** → Your Environment → Settings → Environment Variables
 2. **Set values for each environment variable:**
    - `envvar_SourceDatabaseConnection` → Select your source SQL connection
-   - `envvar_TargetDatabaseConnection` → Select your target SQL connection
+   - `envvar_TargetDatabaseConnection_SQL90` → Select your target SQL connection (SQL Server 2019)
+   - `envvar_TargetDatabaseConnection_SQL83` → Select your target SQL connection (SQL Server 2008)
    - `envvar_DataverseConnection` → Select your Dataverse connection
 
 ### Option 2: Using Power Apps Maker Portal
@@ -103,7 +108,8 @@ pac env var list
 
 # Check specific variable values
 pac env var get --name "envvar_SourceDatabaseConnection"
-pac env var get --name "envvar_TargetDatabaseConnection"
+pac env var get --name "envvar_TargetDatabaseConnection_SQL90"
+pac env var get --name "envvar_TargetDatabaseConnection_SQL83"
 pac env var get --name "envvar_DataverseConnection"
 ```
 
@@ -134,7 +140,8 @@ function Test-EnvironmentSetup {
 
     $envVars = @(
         "envvar_SourceDatabaseConnection",
-        "envvar_TargetDatabaseConnection",
+        "envvar_TargetDatabaseConnection_SQL90",
+        "envvar_TargetDatabaseConnection_SQL83",
         "envvar_DataverseConnection"
     )
 

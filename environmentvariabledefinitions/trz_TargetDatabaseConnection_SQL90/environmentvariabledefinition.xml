@@ -1,0 +1,16 @@
+<environmentvariabledefinition schemaname="trz_TargetDatabaseConnection_SQL90">
+  <apiid>/providers/microsoft.powerapps/apis/shared_sql</apiid>
+  <defaultvalue>WSWMDWH01</defaultvalue>
+  <description default="Connection reference for the target WSDWH_R database (SQL Server 2019/SQL90)">
+    <label description="Connection reference for the target WSDWH_R database (SQL Server 2019/SQL90)" languagecode="1033" />
+  </description>
+  <displayname default="Target Database Connection SQL90">
+    <label description="Target Database Connection SQL90" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.11</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <parameterkey>server</parameterkey>
+  <secretstore>0</secretstore>
+  <type>100000004</type>
+</environmentvariabledefinition>

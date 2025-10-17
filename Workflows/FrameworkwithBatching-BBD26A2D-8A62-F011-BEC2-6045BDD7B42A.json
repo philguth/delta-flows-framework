@@ -2,28 +2,27 @@
   "properties": {
     "connectionReferences": {
       "shared_sql-2": {
-        "runtimeSource": "invoker",
+        "runtimeSource": "embedded",
         "connection": {
-          "connectionReferenceLogicalName": "envvar_SourceDatabaseConnection"
+          "connectionReferenceLogicalName": "trz_SourceWSSAon01"
         },
         "api": {
           "name": "shared_sql"
         }
       },
       "shared_commondataserviceforapps": {
-        "impersonation": {},
-        "runtimeSource": "invoker",
+        "runtimeSource": "embedded",
         "connection": {
-          "connectionReferenceLogicalName": "envvar_DataverseConnection"
+          "connectionReferenceLogicalName": "new_sharedcommondataserviceforapps_694dc"
         },
         "api": {
           "name": "shared_commondataserviceforapps"
         }
       },
       "shared_sql-3": {
-        "runtimeSource": "invoker",
+        "runtimeSource": "embedded",
         "connection": {
-          "connectionReferenceLogicalName": "envvar_TargetDatabaseConnection"
+          "connectionReferenceLogicalName": "trz_SQL83_WSDWH_R_T"
         },
         "api": {
           "name": "shared_sql"
@@ -34,13 +33,13 @@
       "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
       "contentVersion": "1.0.0.0",
       "parameters": {
-        "$authentication": {
-          "defaultValue": {},
-          "type": "SecureObject"
-        },
         "$connections": {
           "defaultValue": {},
           "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
         }
       },
       "triggers": {
@@ -369,10 +368,11 @@
               "parameters/TargetTable": "@triggerBody()?['text_2']"
             },
             "host": {
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+              "connectionName": "shared_sql-2",
               "operationId": "ExecuteProcedure_V2",
-              "connectionName": "shared_sql-2"
-            }
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
+            },
+            "authentication": "@parameters('$authentication')"
           }
         },
         "Set_Flow_Config": {
@@ -411,10 +411,11 @@
               "parameters/ReturnRows": true
             },
             "host": {
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+              "connectionName": "shared_sql-2",
               "operationId": "ExecuteProcedure_V2",
-              "connectionName": "shared_sql-2"
-            }
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
+            },
+            "authentication": "@parameters('$authentication')"
           }
         },
         "Set_JsonOutput_String": {
@@ -514,6 +515,10 @@
           "type": "Response",
           "kind": "PowerApp",
           "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "@{variables('JsonOutput')}"
+            },
             "schema": {
               "type": "object",
               "properties": {
@@ -522,12 +527,7 @@
                   "x-ms-dynamically-added": true,
                   "type": "string"
                 }
-              },
-              "additionalProperties": {}
-            },
-            "statusCode": 200,
-            "body": {
-              "response": "@{variables('JsonOutput')}"
+              }
             }
           }
         },
@@ -564,10 +564,11 @@
               "item/trz_targettablename": "@first(variables('FlowConfig')?['KeyMappings'])?['TargetTableName']"
             },
             "host": {
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "connectionName": "shared_commondataserviceforapps",
               "operationId": "CreateRecord",
-              "connectionName": "shared_commondataserviceforapps"
-            }
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "authentication": "@parameters('$authentication')"
           }
         },
         "🔄_Batch_Processing_Section": {
@@ -585,6 +586,7 @@
         "Do_until": {
           "actions": {
             "Compose_Batch": {
+              "runAfter": {},
               "metadata": {
                 "operationMetadataId": "adbc2547-0431-4790-ae2e-f13f13bf8bb8",
                 "description": "📦 Creates current batch by slicing Changes array. Uses skip() to jump to current BatchIndex position and take() to grab BatchSize records (500). This optimizes processing by handling data in manageable chunks."
@@ -595,6 +597,10 @@
             "Try_-_Insert_Data_to_Target": {
               "actions": {
                 "ESP_-_Send_JSON_to_SQL83": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "b9422c1e-3542-4979-ac87-fd14123367ac"
+                  },
                   "type": "OpenApiConnection",
                   "inputs": {
                     "parameters": {
@@ -606,10 +612,11 @@
                       "parameters/Changes": "@outputs('Convert_Batch_JSON_to_string')"
                     },
                     "host": {
-                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+                      "connectionName": "shared_sql-3",
                       "operationId": "ExecuteProcedure_V2",
-                      "connectionName": "shared_sql-3"
-                    }
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
+                    },
+                    "authentication": "@parameters('$authentication')"
                   }
                 }
               },
@@ -719,15 +726,16 @@
               "parameters/Suffix": "@concat('_',first(variables('FlowConfig')?['KeyMappings'])?['TargetDB'],'_TEST')"
             },
             "host": {
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+              "connectionName": "shared_sql-2",
               "operationId": "ExecuteProcedure_V2",
-              "connectionName": "shared_sql-2"
-            }
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
+            },
+            "authentication": "@parameters('$authentication')"
           }
         }
       }
     },
-    "templateName": null
+    "templateName": ""
   },
   "schemaVersion": "1.0.0.0"
 }

@@ -1,11 +1,11 @@
-<ImportExportXml version="9.2.25083.182" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.25083.182" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.25083.00182">
+﻿<ImportExportXml version="9.2.25084.180" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.25084.180" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.25084.00180">
   <SolutionManifest>
     <UniqueName>DeltaFlowsFramework</UniqueName>
     <LocalizedNames>
-      <LocalizedName description="Delta Flows Synchronization Framework" languagecode="1033" />
+      <LocalizedName description="Delta Flows Framework for HR Data Processing" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
-    <Version>1.0.0.5</Version>
+    <Version>1.0.0.17</Version>
     <Managed>0</Managed>
     <Publisher>
       <UniqueName>Trianz</UniqueName>
@@ -48,7 +48,7 @@
         </Address>
         <Address>
           <AddressNumber>2</AddressNumber>
-          <AddressTypeCode>1</AddressTypeCode>
+          <AddressTypeCode>2</AddressTypeCode>
           <City xsi:nil="true"></City>
           <County xsi:nil="true"></County>
           <Country xsi:nil="true"></Country>
@@ -77,16 +77,9 @@
       </Addresses>
     </Publisher>
     <RootComponents>
-      <RootComponent type="1" schemaName="trz_datamappingrecord" behavior="0" />
-      <RootComponent type="1" schemaName="trz_flowexecutionlog" behavior="0" />
       <RootComponent type="29" id="{27de4aff-d651-f011-877a-7c1e52583799}" behavior="0" />
       <RootComponent type="29" id="{bbd26a2d-8a62-f011-bec2-6045bdd7b42a}" behavior="0" />
-      <RootComponent type="380" schemaName="envvar_SourceDatabaseConnection" behavior="0" />
-      <RootComponent type="381" schemaName="envvar_SourceDatabaseConnection" behavior="0" />
-      <RootComponent type="380" schemaName="envvar_TargetDatabaseConnection" behavior="0" />
-      <RootComponent type="381" schemaName="envvar_TargetDatabaseConnection" behavior="0" />
-      <RootComponent type="380" schemaName="envvar_DataverseConnection" behavior="0" />
-      <RootComponent type="381" schemaName="envvar_DataverseConnection" behavior="0" />
     </RootComponents>
+    <MissingDependencies />
   </SolutionManifest>
 </ImportExportXml>

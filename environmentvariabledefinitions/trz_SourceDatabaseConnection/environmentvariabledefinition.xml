@@ -1,0 +1,16 @@
+<environmentvariabledefinition schemaname="trz_SourceDatabaseConnection">
+  <apiid>/providers/microsoft.powerapps/apis/shared_sql</apiid>
+  <defaultvalue>WSWMDWH01</defaultvalue>
+  <description default="Connection reference for the source WSSA database on WSWMDWH01 server">
+    <label description="Connection reference for the source WSSA database on WSWMDWH01 server" languagecode="1033" />
+  </description>
+  <displayname default="Source Database Connection">
+    <label description="Source Database Connection" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.11</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <parameterkey>server</parameterkey>
+  <secretstore>0</secretstore>
+  <type>100000004</type>
+</environmentvariabledefinition>

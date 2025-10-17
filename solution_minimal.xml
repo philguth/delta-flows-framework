@@ -1,0 +1,49 @@
+﻿<ImportExportXml version="9.2.25084.180" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.25084.180" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.25084.00180">
+  <SolutionManifest>
+    <UniqueName>DeltaFlowsMinimal</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Minimal Delta Flows Test" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>1.0.0.1</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>Trianz</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Trianz" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions />
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City />
+          <County />
+          <Country />
+          <Fax />
+          <FreightTermsCode />
+          <ImportSequenceNumber />
+          <Latitude />
+          <Line1 />
+          <Line2 />
+          <Line3 />
+          <Longitude />
+          <Name />
+          <PostalCode />
+          <PostOfficeBox />
+          <PrimaryContactName />
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince />
+          <Telephone1 />
+          <Telephone2 />
+          <Telephone3 />
+          <TimeZoneRuleVersionNumber />
+          <UPSZone />
+          <UTCOffset />
+          <UTCConversionTimeZoneCode />
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents />
+  </SolutionManifest>
+</ImportExportXml>

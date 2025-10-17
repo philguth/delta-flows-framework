@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <EnvironmentVariableDefinitions>
     <!-- Source Database Connection Environment Variable -->
@@ -11,14 +11,24 @@
       <description>Connection reference for the source WSSA database on WSWMDWH01 server</description>
     </EnvironmentVariableDefinition>
 
-    <!-- Target Database Connection Environment Variable -->
+    <!-- Target Database Connection SQL90 Environment Variable -->
     <EnvironmentVariableDefinition>
-      <schemaName>envvar_TargetDatabaseConnection</schemaName>
-      <displayName>Target Database Connection</displayName>
+      <schemaName>envvar_TargetDatabaseConnection_SQL90</schemaName>
+      <displayName>Target Database Connection SQL90</displayName>
       <type>100000005</type> <!-- Connection Reference type -->
       <connectionReferenceComponentType>shared_sql</connectionReferenceComponentType>
       <isRequired>1</isRequired>
-      <description>Connection reference for the target WSDWH_R database</description>
+      <description>Connection reference for the target WSDWH_R database (SQL Server 2019/SQL90)</description>
+    </EnvironmentVariableDefinition>
+
+    <!-- Target Database Connection SQL83 Environment Variable -->
+    <EnvironmentVariableDefinition>
+      <schemaName>envvar_TargetDatabaseConnection_SQL83</schemaName>
+      <displayName>Target Database Connection SQL83</displayName>
+      <type>100000005</type> <!-- Connection Reference type -->
+      <connectionReferenceComponentType>shared_sql</connectionReferenceComponentType>
+      <isRequired>1</isRequired>
+      <description>Connection reference for the target WSDWH_R database (SQL Server 2008/SQL83)</description>
     </EnvironmentVariableDefinition>
 
     <!-- Dataverse Connection Environment Variable -->

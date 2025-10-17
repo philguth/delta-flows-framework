@@ -1,0 +1,14 @@
+<environmentvariabledefinition schemaname="trz_DataverseConnection">
+  <apiid>/providers/microsoft.powerapps/apis/shared_commondataserviceforapps</apiid>
+  <description default="Connection reference for Microsoft Dataverse to access custom entities">
+    <label description="Connection reference for Microsoft Dataverse to access custom entities" languagecode="1033" />
+  </description>
+  <displayname default="Dataverse Connection">
+    <label description="Dataverse Connection" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.11</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000004</type>
+</environmentvariabledefinition>

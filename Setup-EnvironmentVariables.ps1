@@ -9,7 +9,10 @@ param(
     [string]$SourceConnectionName = "Source-WSSA-Connection",
 
     [Parameter(Mandatory=$false)]
-    [string]$TargetConnectionName = "Target-WSDWHR-Connection",
+    [string]$TargetConnectionName_SQL90 = "Target-WSDWHR-SQL90-Connection",
+
+    [Parameter(Mandatory=$false)]
+    [string]$TargetConnectionName_SQL83 = "Target-WSDWHR-SQL83-Connection",
 
     [Parameter(Mandatory=$false)]
     [string]$DataverseConnectionName = "Dataverse-Connection"
@@ -123,7 +126,8 @@ Write-Host "`n📋 Step 1: Creating Connections" -ForegroundColor Cyan
 
 # Create connections
 New-SqlConnection -ConnectionName $SourceConnectionName -DisplayName "Source WSSA Database" -Description "Connection to source WSSA database on WSWMDWH01"
-New-SqlConnection -ConnectionName $TargetConnectionName -DisplayName "Target WSDWH_R Database" -Description "Connection to target WSDWH_R data warehouse"
+New-SqlConnection -ConnectionName $TargetConnectionName_SQL90 -DisplayName "Target WSDWH_R Database (SQL90)" -Description "Connection to target WSDWH_R data warehouse (SQL Server 2019/SQL90)"
+New-SqlConnection -ConnectionName $TargetConnectionName_SQL83 -DisplayName "Target WSDWH_R Database (SQL83)" -Description "Connection to target WSDWH_R data warehouse (SQL Server 2008/SQL83)"
 New-DataverseConnection -ConnectionName $DataverseConnectionName -DisplayName "Dataverse Environment"
 
 Write-Host "`n📋 Step 2: Configuring Environment Variables" -ForegroundColor Cyan
@@ -131,7 +135,8 @@ Write-Host "`n📋 Step 2: Configuring Environment Variables" -ForegroundColor C
 # Set environment variables
 $envVarResults = @()
 $envVarResults += Set-EnvironmentVariable -VarName "envvar_SourceDatabaseConnection" -ConnectionName $SourceConnectionName -Description "Source database connection"
-$envVarResults += Set-EnvironmentVariable -VarName "envvar_TargetDatabaseConnection" -ConnectionName $TargetConnectionName -Description "Target database connection"
+$envVarResults += Set-EnvironmentVariable -VarName "envvar_TargetDatabaseConnection_SQL90" -ConnectionName $TargetConnectionName_SQL90 -Description "Target database connection (SQL Server 2019/SQL90)"
+$envVarResults += Set-EnvironmentVariable -VarName "envvar_TargetDatabaseConnection_SQL83" -ConnectionName $TargetConnectionName_SQL83 -Description "Target database connection (SQL Server 2008/SQL83)"
 $envVarResults += Set-EnvironmentVariable -VarName "envvar_DataverseConnection" -ConnectionName $DataverseConnectionName -Description "Dataverse connection"
 
 # Summary
