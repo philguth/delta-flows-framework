@@ -2,51 +2,48 @@
   "properties": {
     "connectionReferences": {
       "shared_sql-2": {
-        "runtimeSource": "invoker",
+        "api": {
+          "name": "shared_sql"
+        },
         "connection": {
           "connectionReferenceLogicalName": "envvar_SourceDatabaseConnection"
         },
-        "api": {
-          "name": "shared_sql"
-        }
+        "runtimeSource": "invoker"
       },
       "shared_commondataserviceforapps": {
-        "runtimeSource": "invoker",
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        },
         "connection": {
           "connectionReferenceLogicalName": "envvar_DataverseConnection"
         },
-        "api": {
-          "name": "shared_commondataserviceforapps"
-        }
+        "runtimeSource": "invoker"
       },
-      "shared_sql-3": {
-        "runtimeSource": "invoker",
-        "connection": {
-          "connectionReferenceLogicalName": "envvar_TargetDatabaseConnection_SQL83"
-        },
+      "shared_sql": {
         "api": {
           "name": "shared_sql"
-        }
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "envvar_TargetDatabaseConnection_SQL90"
+        },
+        "runtimeSource": "invoker"
       }
     },
     "definition": {
       "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
       "contentVersion": "1.0.0.0",
       "parameters": {
-        "$connections": {
-          "defaultValue": {},
-          "type": "Object"
-        },
         "$authentication": {
           "defaultValue": {},
           "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
         }
       },
       "triggers": {
         "manual": {
-          "metadata": {
-            "operationMetadataId": "310a7995-978c-4bf6-9fb7-0bda7e7cbacb"
-          },
           "type": "Request",
           "kind": "Button",
           "inputs": {
@@ -88,28 +85,22 @@
                 "text_2"
               ]
             }
+          },
+          "metadata": {
+            "operationMetadataId": "310a7995-978c-4bf6-9fb7-0bda7e7cbacb"
           }
         }
       },
       "actions": {
         "📋_Flow_Documentation_Header": {
+          "type": "Compose",
+          "inputs": "📋 HR DELTA FLOWS FOR WSDWH_R - FRAMEWORK WITH BATCHING\n\n🎯 PURPOSE:\nProcesses changed data from source system table/view to target a target table on a different server. \n\n📥 INPUTS:\n• SourceView: Name of source view containing delta data (e.g., df.wsvEmpBar)\n• SourceView_bu: Name of source backup view (e.g., df.bk_wsvEmpBar_WSDWH_R)\n• TargetTable: Name of target table for data insertion (e.g., wstEmployeeBarAdmission)\n• ParentFlowRunId: Optional - Flow run ID when called from parent flow\n\n📤 OUTPUTS:\n• JSON response containing processing results\n• Dataverse execution logs for monitoring\n• Source table backup for rollback capabilities\n\n🔄 PROCESS OVERVIEW:\n1. Initialize variables and retrieve dynamic configuration\n2. Get delta changes from source system\n3. Process changes in configurable batches (500 records)\n4. Apply changes to target system using stored procedures\n5. Log execution details and create backup\n\n⚙️ CONFIGURATION:\n• Batch Size: 500 records per batch (configurable)\n• Max Iterations: 60 batches (30,000 records max)\n• Timeout: 1 hour per execution\n• Connections: Source DB (WSSA), Target DB (WSDWH_R_T), Dataverse\n\n🛡️ ERROR HANDLING:\n• Try-Catch blocks around SQL operations\n• Graceful failure with detailed logging\n• Continuation on individual batch failures",
           "runAfter": {},
           "metadata": {
             "operationMetadataId": "flow-documentation-header"
-          },
-          "type": "Compose",
-          "inputs": "📋 HR DELTA FLOWS FOR WSDWH_R - FRAMEWORK WITH BATCHING\n\n🎯 PURPOSE:\nProcesses changed data from source system table/view to target a target table on a different server. \n\n📥 INPUTS:\n• SourceView: Name of source view containing delta data (e.g., df.wsvEmpBar)\n• SourceView_bu: Name of source backup view (e.g., df.bk_wsvEmpBar_WSDWH_R)\n• TargetTable: Name of target table for data insertion (e.g., wstEmployeeBarAdmission)\n• ParentFlowRunId: Optional - Flow run ID when called from parent flow\n\n📤 OUTPUTS:\n• JSON response containing processing results\n• Dataverse execution logs for monitoring\n• Source table backup for rollback capabilities\n\n🔄 PROCESS OVERVIEW:\n1. Initialize variables and retrieve dynamic configuration\n2. Get delta changes from source system\n3. Process changes in configurable batches (500 records)\n4. Apply changes to target system using stored procedures\n5. Log execution details and create backup\n\n⚙️ CONFIGURATION:\n• Batch Size: 500 records per batch (configurable)\n• Max Iterations: 60 batches (30,000 records max)\n• Timeout: 1 hour per execution\n• Connections: Source DB (WSSA), Target DB (WSDWH_R_T), Dataverse\n\n🛡️ ERROR HANDLING:\n• Try-Catch blocks around SQL operations\n• Graceful failure with detailed logging\n• Continuation on individual batch failures"
+          }
         },
         "Initialize_FlowConfig": {
-          "runAfter": {
-            "📋_Flow_Documentation_Header": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "init-flowconfig",
-            "description": "📋 Initializes FlowConfig object variable to store parsed configuration data from the database. Will contain flow metadata, table mappings, and processing rules retrieved from wspGetFlowConfig stored procedure."
-          },
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -118,18 +109,18 @@
                 "type": "object"
               }
             ]
-          }
-        },
-        "Initialize_JsonOutput": {
+          },
           "runAfter": {
-            "Initialize_FlowConfig": [
+            "📋_Flow_Documentation_Header": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "init-varjsonoutput",
-            "description": "📄 Initializes JsonOutput string variable to store configuration data retrieved from database. Acts as temporary storage before parsing into FlowConfig object for workflow processing."
-          },
+            "operationMetadataId": "init-flowconfig",
+            "description": "📋 Initializes FlowConfig object variable to store parsed configuration data from the database. Will contain flow metadata, table mappings, and processing rules retrieved from wspGetFlowConfig stored procedure."
+          }
+        },
+        "Initialize_JsonOutput": {
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -138,18 +129,18 @@
                 "type": "string"
               }
             ]
-          }
-        },
-        "Initialize_Changes": {
+          },
           "runAfter": {
-            "Initialize_JsonOutput": [
+            "Initialize_FlowConfig": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "init-var-changes",
-            "description": "📊 Initializes Changes array variable to store delta records retrieved from source system. Will contain all records to be processed, then divided into batches for efficient processing."
-          },
+            "operationMetadataId": "init-varjsonoutput",
+            "description": "📄 Initializes JsonOutput string variable to store configuration data retrieved from database. Acts as temporary storage before parsing into FlowConfig object for workflow processing."
+          }
+        },
+        "Initialize_Changes": {
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -158,18 +149,18 @@
                 "type": "array"
               }
             ]
-          }
-        },
-        "Initialize_BatchSize": {
+          },
           "runAfter": {
-            "Initialize_Changes": [
+            "Initialize_JsonOutput": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "init-batchsize",
-            "description": "⚙️ Initializes BatchSize integer variable to control number of records processed per batch. Set to 500 for optimal performance balance between throughput and memory usage."
-          },
+            "operationMetadataId": "init-var-changes",
+            "description": "📊 Initializes Changes array variable to store delta records retrieved from source system. Will contain all records to be processed, then divided into batches for efficient processing."
+          }
+        },
+        "Initialize_BatchSize": {
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -179,18 +170,18 @@
                 "value": 500
               }
             ]
-          }
-        },
-        "Initialize_BatchIndex": {
+          },
           "runAfter": {
-            "Initialize_BatchSize": [
+            "Initialize_Changes": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "init-batchindex",
-            "description": "🔢 Initializes BatchIndex integer variable to track current batch position during processing. Starts at 0 and increments with each batch iteration for progress tracking."
-          },
+            "operationMetadataId": "init-batchsize",
+            "description": "⚙️ Initializes BatchSize integer variable to control number of records processed per batch. Set to 500 for optimal performance balance between throughput and memory usage."
+          }
+        },
+        "Initialize_BatchIndex": {
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -200,18 +191,18 @@
                 "value": 0
               }
             ]
-          }
-        },
-        "Initialize_BatchTotalCount": {
+          },
           "runAfter": {
-            "Initialize_BatchIndex": [
+            "Initialize_BatchSize": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "init-batchtotalcount",
-            "description": "📈 Initializes BatchTotalCount integer variable to store total number of batches required for processing. Calculated as ceiling(total records / batch size) for progress monitoring."
-          },
+            "operationMetadataId": "init-batchindex",
+            "description": "🔢 Initializes BatchIndex integer variable to track current batch position during processing. Starts at 0 and increments with each batch iteration for progress tracking."
+          }
+        },
+        "Initialize_BatchTotalCount": {
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -221,18 +212,18 @@
                 "value": 0
               }
             ]
-          }
-        },
-        "Initialize_BatchIndexTemp": {
+          },
           "runAfter": {
-            "Initialize_BatchTotalCount": [
+            "Initialize_BatchIndex": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "init-batchindextemp",
-            "description": "🔄 Initializes BatchIndexTemp integer variable as temporary counter for batch processing calculations. Used within loops to calculate current batch position and slice arrays."
-          },
+            "operationMetadataId": "init-batchtotalcount",
+            "description": "📈 Initializes BatchTotalCount integer variable to store total number of batches required for processing. Calculated as ceiling(total records / batch size) for progress monitoring."
+          }
+        },
+        "Initialize_BatchIndexTemp": {
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -242,9 +233,20 @@
                 "value": 0
               }
             ]
+          },
+          "runAfter": {
+            "Initialize_BatchTotalCount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "init-batchindextemp",
+            "description": "🔄 Initializes BatchIndexTemp integer variable as temporary counter for batch processing calculations. Used within loops to calculate current batch position and slice arrays."
           }
         },
         "📝_Configuration_Section": {
+          "type": "Compose",
+          "inputs": "📝 CONFIGURATION RETRIEVAL SECTION\n\n🎯 PURPOSE: Retrieve dynamic configuration from database and set up flow variables\n\n🔧 ACTIONS:\n• Calls wspGetFlowConfig stored procedure\n• Parses JSON configuration containing table mappings\n• Sets FlowConfig variable with first configuration record\n\n📊 CONFIGURATION STRUCTURE:\n• FlowName: Identifies the specific flow configuration\n• RetrievedAt: Timestamp of configuration retrieval\n• KeyMappings: Array of column mappings between source and target\n  - SourceDB/TargetDB: Database identifiers\n  - SourceTableName/TargetTableName: Table identifiers\n  - Column mappings with data types and flags\n\n⚠️ DEPENDENCIES:\n• All variables must be initialized before configuration retrieval\n• Database connection 'shared_sql-2' must be available",
           "runAfter": {
             "Initialize_BatchIndexTemp": [
               "Succeeded"
@@ -252,20 +254,9 @@
           },
           "metadata": {
             "operationMetadataId": "config-section-docs"
-          },
-          "type": "Compose",
-          "inputs": "📝 CONFIGURATION RETRIEVAL SECTION\n\n🎯 PURPOSE: Retrieve dynamic configuration from database and set up flow variables\n\n🔧 ACTIONS:\n• Calls wspGetFlowConfig stored procedure\n• Parses JSON configuration containing table mappings\n• Sets FlowConfig variable with first configuration record\n\n📊 CONFIGURATION STRUCTURE:\n• FlowName: Identifies the specific flow configuration\n• RetrievedAt: Timestamp of configuration retrieval\n• KeyMappings: Array of column mappings between source and target\n  - SourceDB/TargetDB: Database identifiers\n  - SourceTableName/TargetTableName: Table identifiers\n  - Column mappings with data types and flags\n\n⚠️ DEPENDENCIES:\n• All variables must be initialized before configuration retrieval\n• Database connection 'shared_sql-2' must be available"
+          }
         },
         "Parse_JSON_-_Config_for_Flow_Run": {
-          "runAfter": {
-            "ESP_-_Get_Config_for_Flow_Run": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "refactored-parse-config-json",
-            "description": "📋 Parses the JSON configuration returned from wspGetFlowConfig stored procedure. Validates the structure against a predefined schema containing FlowName, RetrievedAt timestamp, and KeyMappings array. Ensures all required fields are present for downstream processing."
-          },
           "type": "ParseJson",
           "inputs": {
             "content": "@json(body('ESP_-_Get_Config_for_Flow_Run')?['ResultSets']?['Table1']?[0]?['FlowConfig'])",
@@ -345,18 +336,18 @@
                 ]
               }
             }
-          }
-        },
-        "ESP_-_Get_Config_for_Flow_Run": {
+          },
           "runAfter": {
-            "📝_Configuration_Section": [
+            "ESP_-_Get_Config_for_Flow_Run": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "refactored-esp-get-config-for-flow",
-            "description": "🔧 Retrieves dynamic flow configuration from WSSA database. Calls wspGetFlowConfig stored procedure with source view, backup view, and target table parameters. Returns JSON configuration containing table mappings, data types, and processing rules for the current flow execution."
-          },
+            "operationMetadataId": "refactored-parse-config-json",
+            "description": "📋 Parses the JSON configuration returned from wspGetFlowConfig stored procedure. Validates the structure against a predefined schema containing FlowName, RetrievedAt timestamp, and KeyMappings array. Ensures all required fields are present for downstream processing."
+          }
+        },
+        "ESP_-_Get_Config_for_Flow_Run": {
           "type": "OpenApiConnection",
           "inputs": {
             "parameters": {
@@ -368,14 +359,27 @@
               "parameters/TargetTable": "@triggerBody()?['text_2']"
             },
             "host": {
-              "connectionName": "shared_sql-2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
               "operationId": "ExecuteProcedure_V2",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
-            },
-            "authentication": "@parameters('$authentication')"
+              "connectionName": "shared_sql-2"
+            }
+          },
+          "runAfter": {
+            "📝_Configuration_Section": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "refactored-esp-get-config-for-flow",
+            "description": "🔧 Retrieves dynamic flow configuration from WSSA database. Calls wspGetFlowConfig stored procedure with source view, backup view, and target table parameters. Returns JSON configuration containing table mappings, data types, and processing rules for the current flow execution."
           }
         },
         "Set_Flow_Config": {
+          "type": "SetVariable",
+          "inputs": {
+            "name": "FlowConfig",
+            "value": "@first(body('Parse_JSON_-_Config_for_Flow_Run'))"
+          },
           "runAfter": {
             "Parse_JSON_-_Config_for_Flow_Run": [
               "Succeeded"
@@ -383,14 +387,24 @@
           },
           "metadata": {
             "operationMetadataId": "refactored-set-flow-config"
-          },
-          "type": "SetVariable",
-          "inputs": {
-            "name": "FlowConfig",
-            "value": "@first(body('Parse_JSON_-_Config_for_Flow_Run'))"
           }
         },
         "ESP_-_Get_Changes_from_Source": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "server": "WSWMDWH01",
+              "database": "WSSA",
+              "procedure": "[df].[wspGetChangesJson]",
+              "parameters/SourceView": "@triggerBody()?['text']",
+              "parameters/SourceView_bu": "@triggerBody()?['text_1']"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
+              "operationId": "ExecuteProcedure_V2",
+              "connectionName": "shared_sql-2"
+            }
+          },
           "runAfter": {
             "Set_Flow_Config": [
               "Succeeded"
@@ -399,26 +413,14 @@
           "metadata": {
             "operationMetadataId": "esp-get-changes-from-source",
             "description": "📊 Retrieves delta changes from the source system by calling wspGetChanges stored procedure. Returns JSON array containing all records that have been inserted, updated, or deleted since the last synchronization. This data forms the basis for batch processing."
-          },
-          "type": "OpenApiConnection",
-          "inputs": {
-            "parameters": {
-              "server": "WSWMDWH01",
-              "database": "WSSA",
-              "procedure": "[df].[wspCheckOrGetChanges]",
-              "parameters/SourceView": "@triggerBody()?['text']",
-              "parameters/SourceView_bu": "@triggerBody()?['text_1']",
-              "parameters/ReturnRows": true
-            },
-            "host": {
-              "connectionName": "shared_sql-2",
-              "operationId": "ExecuteProcedure_V2",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
-            },
-            "authentication": "@parameters('$authentication')"
           }
         },
         "Set_JsonOutput_String": {
+          "type": "SetVariable",
+          "inputs": {
+            "name": "JsonOutput",
+            "value": "@{outputs('ESP_-_Get_Changes_from_Source')?['body']}"
+          },
           "runAfter": {
             "ESP_-_Get_Changes_from_Source": [
               "Succeeded"
@@ -426,22 +428,9 @@
           },
           "metadata": {
             "operationMetadataId": "17c62233-7da7-4c60-bf97-ad33a15bd7cd"
-          },
-          "type": "SetVariable",
-          "inputs": {
-            "name": "JsonOutput",
-            "value": "@{outputs('ESP_-_Get_Changes_from_Source')?['body']}"
           }
         },
         "Parse_JSON_-_Get_Changes_from_Source": {
-          "runAfter": {
-            "Set_JsonOutput_String": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "48722990-9645-4112-8b1a-de9c622d5bdd"
-          },
           "type": "ParseJson",
           "inputs": {
             "content": "@json(outputs('ESP_-_Get_Changes_from_Source')?['body/resultsets']?['Table1']?[0]?['JsonOutput'])",
@@ -459,9 +448,22 @@
                 ]
               }
             }
+          },
+          "runAfter": {
+            "Set_JsonOutput_String": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "48722990-9645-4112-8b1a-de9c622d5bdd"
           }
         },
         "Set_Changes_Array": {
+          "type": "SetVariable",
+          "inputs": {
+            "name": "Changes",
+            "value": "@body('Parse_JSON_-_Get_Changes_from_Source')"
+          },
           "runAfter": {
             "Parse_JSON_-_Get_Changes_from_Source": [
               "Succeeded"
@@ -469,14 +471,14 @@
           },
           "metadata": {
             "operationMetadataId": "set-batch-variables"
-          },
-          "type": "SetVariable",
-          "inputs": {
-            "name": "Changes",
-            "value": "@body('Parse_JSON_-_Get_Changes_from_Source')"
           }
         },
         "Set_BatchTotalCount": {
+          "type": "SetVariable",
+          "inputs": {
+            "name": "BatchTotalCount",
+            "value": "@length(variables('Changes'))"
+          },
           "runAfter": {
             "Set_Changes_Array": [
               "Succeeded"
@@ -484,14 +486,11 @@
           },
           "metadata": {
             "operationMetadataId": "set-batch-total-count"
-          },
-          "type": "SetVariable",
-          "inputs": {
-            "name": "BatchTotalCount",
-            "value": "@length(variables('Changes'))"
           }
         },
         "📊_Data_Processing_Section": {
+          "type": "Compose",
+          "inputs": "📊 DATA PROCESSING SECTION\n\n🎯 PURPOSE: Retrieve and prepare delta changes for batch processing\n\n🔄 PROCESS FLOW:\n1. Get Changes: Calls wspGetChanges stored procedure on source system\n2. Parse JSON: Converts raw JSON output to structured data\n3. Set Variables: Populates Changes array and calculates batch total\n\n📋 DATA STRUCTURE:\n• Changes Array: Contains delta records with ChangeType field\n• Each record represents an insert, update, or delete operation\n• JSON structure validated against predefined schema\n\n📈 BATCH PREPARATION:\n• BatchTotalCount: Total number of records to process\n• BatchSize: Fixed at 500 records per batch\n• BatchIndex: Starting position (initialized to 0)\n\n⚙️ PERFORMANCE CONSIDERATIONS:\n• Large datasets processed in manageable chunks\n• Memory optimization through batching\n• Progress tracking via batch indices",
           "runAfter": {
             "Set_BatchTotalCount": [
               "Succeeded"
@@ -499,26 +498,12 @@
           },
           "metadata": {
             "operationMetadataId": "data-processing-section-docs"
-          },
-          "type": "Compose",
-          "inputs": "📊 DATA PROCESSING SECTION\n\n🎯 PURPOSE: Retrieve and prepare delta changes for batch processing\n\n🔄 PROCESS FLOW:\n1. Get Changes: Calls wspGetChanges stored procedure on source system\n2. Parse JSON: Converts raw JSON output to structured data\n3. Set Variables: Populates Changes array and calculates batch total\n\n📋 DATA STRUCTURE:\n• Changes Array: Contains delta records with ChangeType field\n• Each record represents an insert, update, or delete operation\n• JSON structure validated against predefined schema\n\n📈 BATCH PREPARATION:\n• BatchTotalCount: Total number of records to process\n• BatchSize: Fixed at 500 records per batch\n• BatchIndex: Starting position (initialized to 0)\n\n⚙️ PERFORMANCE CONSIDERATIONS:\n• Large datasets processed in manageable chunks\n• Memory optimization through batching\n• Progress tracking via batch indices"
+          }
         },
         "Respond_to_Parent_Flow": {
-          "runAfter": {
-            "ESP_-_Create_New_Backup_Snapshot_of_Source_View": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "60c59d2d-3ea8-458b-9673-fd9573018566"
-          },
           "type": "Response",
           "kind": "PowerApp",
           "inputs": {
-            "statusCode": 200,
-            "body": {
-              "response": "@{variables('JsonOutput')}"
-            },
             "schema": {
               "type": "object",
               "properties": {
@@ -527,11 +512,26 @@
                   "x-ms-dynamically-added": true,
                   "type": "string"
                 }
-              }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "response": "@{variables('JsonOutput')}"
             }
+          },
+          "runAfter": {
+            "ESP_-_Create_New_Backup_Snapshot_of_Source_View": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "60c59d2d-3ea8-458b-9673-fd9573018566"
           }
         },
         "📝_Logging_and_Cleanup_Section": {
+          "type": "Compose",
+          "inputs": "📝 LOGGING AND CLEANUP SECTION\n\n🎯 PURPOSE: Record execution details and perform data backup operations\n\n📋 LOGGING ACTIVITIES:\n• Dataverse Record: Creates execution log in trz_flowexecutionlogs\n• Flow Metadata: Records flow name, run ID, and timestamps\n• Table References: Documents source and target table names\n• Parent Flow Tracking: Links to parent flow if applicable\n\n🛡️ BACKUP OPERATIONS:\n• Source Table Backup: Calls wspBackupTable stored procedure\n• Rollback Capability: Enables data recovery if needed\n• Audit Trail: Maintains historical snapshots\n• Suffix Convention: Uses TargetDB_TEST naming pattern\n\n📤 RESPONSE GENERATION:\n• JSON Output: Returns processing results to caller\n• Status Information: Success/failure indicators\n• Record Counts: Number of records processed\n• Execution Summary: Key metrics and outcomes\n\n🔗 INTEGRATION POINTS:\n• Dataverse: For execution logging and monitoring\n• Source Database: For backup operations\n• Parent Flows: For orchestrated processing scenarios",
           "runAfter": {
             "Do_until": [
               "Succeeded"
@@ -539,20 +539,9 @@
           },
           "metadata": {
             "operationMetadataId": "logging-cleanup-section-docs"
-          },
-          "type": "Compose",
-          "inputs": "📝 LOGGING AND CLEANUP SECTION\n\n🎯 PURPOSE: Record execution details and perform data backup operations\n\n📋 LOGGING ACTIVITIES:\n• Dataverse Record: Creates execution log in trz_flowexecutionlogs\n• Flow Metadata: Records flow name, run ID, and timestamps\n• Table References: Documents source and target table names\n• Parent Flow Tracking: Links to parent flow if applicable\n\n🛡️ BACKUP OPERATIONS:\n• Source Table Backup: Calls wspBackupTable stored procedure\n• Rollback Capability: Enables data recovery if needed\n• Audit Trail: Maintains historical snapshots\n• Suffix Convention: Uses TargetDB_TEST naming pattern\n\n📤 RESPONSE GENERATION:\n• JSON Output: Returns processing results to caller\n• Status Information: Success/failure indicators\n• Record Counts: Number of records processed\n• Execution Summary: Key metrics and outcomes\n\n🔗 INTEGRATION POINTS:\n• Dataverse: For execution logging and monitoring\n• Source Database: For backup operations\n• Parent Flows: For orchestrated processing scenarios"
+          }
         },
         "Log_Row_to_Dataverse_Table": {
-          "runAfter": {
-            "📝_Logging_and_Cleanup_Section": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "f8fe6b34-bd54-4af8-a4b8-b578371a2074",
-            "description": "📝 Creates an execution log record in Dataverse (trz_flowexecutionlogs table) for monitoring and audit purposes. Records flow run ID, flow name, source/target table names, and execution metadata for tracking and troubleshooting."
-          },
           "type": "OpenApiConnection",
           "inputs": {
             "parameters": {
@@ -564,14 +553,24 @@
               "item/trz_targettablename": "@first(variables('FlowConfig')?['KeyMappings'])?['TargetTableName']"
             },
             "host": {
-              "connectionName": "shared_commondataserviceforapps",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
               "operationId": "CreateRecord",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
-            },
-            "authentication": "@parameters('$authentication')"
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "runAfter": {
+            "📝_Logging_and_Cleanup_Section": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f8fe6b34-bd54-4af8-a4b8-b578371a2074",
+            "description": "📝 Creates an execution log record in Dataverse (trz_flowexecutionlogs table) for monitoring and audit purposes. Records flow run ID, flow name, source/target table names, and execution metadata for tracking and troubleshooting."
           }
         },
         "🔄_Batch_Processing_Section": {
+          "type": "Compose",
+          "inputs": "🔄 BATCH PROCESSING SECTION\n\n🎯 PURPOSE: Process changes in optimized batches to handle large datasets efficiently\n\n⚙️ BATCH LOGIC:\n• Loop Condition: Continue while BatchIndex < BatchTotalCount\n• Batch Size: 500 records per iteration\n• Max Iterations: 60 (prevents infinite loops)\n• Timeout: 1 hour total execution time\n\n🔧 BATCH OPERATIONS:\n1. Compose Batch: Extract next 500 records using skip/take\n2. Convert to String: Prepare JSON for stored procedure\n3. SQL Execution: Send batch to wspApplyChanges procedure\n4. Error Handling: Try-Catch around SQL operations\n5. Index Update: Increment BatchIndex for next iteration\n\n📊 PERFORMANCE BENEFITS:\n• Reduces memory usage for large datasets\n• Enables progress tracking and recovery\n• Prevents timeout on massive data loads\n• Allows partial success scenarios\n\n🛡️ ERROR RESILIENCE:\n• Individual batch failures don't stop entire process\n• Detailed logging for troubleshooting\n• Graceful degradation under load",
           "runAfter": {
             "📊_Data_Processing_Section": [
               "Succeeded"
@@ -579,44 +578,45 @@
           },
           "metadata": {
             "operationMetadataId": "batch-processing-section-docs"
-          },
-          "type": "Compose",
-          "inputs": "🔄 BATCH PROCESSING SECTION\n\n🎯 PURPOSE: Process changes in optimized batches to handle large datasets efficiently\n\n⚙️ BATCH LOGIC:\n• Loop Condition: Continue while BatchIndex < BatchTotalCount\n• Batch Size: 500 records per iteration\n• Max Iterations: 60 (prevents infinite loops)\n• Timeout: 1 hour total execution time\n\n🔧 BATCH OPERATIONS:\n1. Compose Batch: Extract next 500 records using skip/take\n2. Convert to String: Prepare JSON for stored procedure\n3. SQL Execution: Send batch to wspApplyChanges procedure\n4. Error Handling: Try-Catch around SQL operations\n5. Index Update: Increment BatchIndex for next iteration\n\n📊 PERFORMANCE BENEFITS:\n• Reduces memory usage for large datasets\n• Enables progress tracking and recovery\n• Prevents timeout on massive data loads\n• Allows partial success scenarios\n\n🛡️ ERROR RESILIENCE:\n• Individual batch failures don't stop entire process\n• Detailed logging for troubleshooting\n• Graceful degradation under load"
+          }
         },
         "Do_until": {
+          "type": "Until",
+          "expression": "@greaterOrEquals(variables('BatchIndex'),variables('BatchTotalCount'))",
+          "limit": {
+            "count": 60,
+            "timeout": "PT1H"
+          },
           "actions": {
             "Compose_Batch": {
-              "runAfter": {},
+              "type": "Compose",
+              "inputs": "@take(skip(variables('Changes'),variables('BatchIndex')),variables('BatchSize'))",
               "metadata": {
                 "operationMetadataId": "adbc2547-0431-4790-ae2e-f13f13bf8bb8",
                 "description": "📦 Creates current batch by slicing Changes array. Uses skip() to jump to current BatchIndex position and take() to grab BatchSize records (500). This optimizes processing by handling data in manageable chunks."
-              },
-              "type": "Compose",
-              "inputs": "@take(skip(variables('Changes'),variables('BatchIndex')),variables('BatchSize'))"
+              }
             },
             "Try_-_Insert_Data_to_Target": {
+              "type": "Scope",
               "actions": {
-                "ESP_-_Send_JSON_to_SQL83": {
-                  "runAfter": {},
-                  "metadata": {
-                    "operationMetadataId": "b9422c1e-3542-4979-ac87-fd14123367ac"
-                  },
+                "ESP_-_Send_JSON_to_SQL90": {
                   "type": "OpenApiConnection",
                   "inputs": {
                     "parameters": {
-                      "server": "WSWMSQL83",
-                      "database": "WSDWH_R_T",
+                      "server": "wswmsql90",
+                      "database": "wssa",
                       "procedure": "[df].[wspApplyChanges]",
-                      "parameters/SourceTable": "@first(variables('FlowConfig')?['KeyMappings'])?['SourceTableName']",
                       "parameters/TargetTable": "@first(variables('FlowConfig')?['KeyMappings'])?['TargetTableName']",
                       "parameters/Changes": "@outputs('Convert_Batch_JSON_to_string')"
                     },
                     "host": {
-                      "connectionName": "shared_sql-3",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
                       "operationId": "ExecuteProcedure_V2",
-                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
-                    },
-                    "authentication": "@parameters('$authentication')"
+                      "connectionName": "shared_sql"
+                    }
+                  },
+                  "metadata": {
+                    "operationMetadataId": "b9422c1e-3542-4979-ac87-fd14123367ac"
                   }
                 }
               },
@@ -628,10 +628,10 @@
               "metadata": {
                 "operationMetadataId": "a35dd9ff-bc38-4d56-8f7b-7ddeaecaa8d6",
                 "description": "🛡️ Try block for SQL batch processing operation. Executes wspApplyChanges stored procedure to apply current batch of changes to target database. Handles potential SQL connection or execution errors gracefully."
-              },
-              "type": "Scope"
+              }
             },
             "Catch_-_Error_Processing": {
+              "type": "Scope",
               "actions": {},
               "runAfter": {
                 "Try_-_Insert_Data_to_Target": [
@@ -641,10 +641,14 @@
               "metadata": {
                 "operationMetadataId": "b3964ab8-8118-4d38-816e-586632e09efc",
                 "description": "⚠️ Catch block for SQL batch processing errors. Currently configured to continue processing on errors without specific error handling actions. Could be enhanced with logging or notification actions for production use."
-              },
-              "type": "Scope"
+              }
             },
             "Set_BatchIndexTemp": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "BatchIndexTemp",
+                "value": "@add(variables('BatchIndex'), variables('BatchSize'))"
+              },
               "runAfter": {
                 "Catch_-_Error_Processing": [
                   "Succeeded"
@@ -653,14 +657,14 @@
               "metadata": {
                 "operationMetadataId": "3579411a-a83a-4a2e-a10c-e01bb4b475dd",
                 "description": "📊 Calculates next batch starting position by adding current BatchIndex to BatchSize. Used to determine array slice position for the next batch iteration in the processing loop."
-              },
-              "type": "SetVariable",
-              "inputs": {
-                "name": "BatchIndexTemp",
-                "value": "@add(variables('BatchIndex'), variables('BatchSize'))"
               }
             },
             "Set_BatchIndex": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "BatchIndex",
+                "value": "@variables('BatchIndexTemp')"
+              },
               "runAfter": {
                 "Set_BatchIndexTemp": [
                   "Succeeded"
@@ -669,14 +673,11 @@
               "metadata": {
                 "operationMetadataId": "b346749e-7933-4e16-84d3-c3a8954aa14b",
                 "description": "⬆️ Advances BatchIndex to next processing position by setting it to BatchIndexTemp value. This moves the loop forward to process the next batch of 500 records in the subsequent iteration."
-              },
-              "type": "SetVariable",
-              "inputs": {
-                "name": "BatchIndex",
-                "value": "@variables('BatchIndexTemp')"
               }
             },
             "Convert_Batch_JSON_to_string": {
+              "type": "Compose",
+              "inputs": "@string(outputs('Compose_Batch'))",
               "runAfter": {
                 "Compose_Batch": [
                   "Succeeded"
@@ -685,9 +686,7 @@
               "metadata": {
                 "operationMetadataId": "32cb5c23-50ff-4c47-9240-803014e65235",
                 "description": "🔗 Converts batch array to string format required by SQL stored procedure. Transforms composed batch data into JSON string that wspApplyChanges can process for database operations."
-              },
-              "type": "Compose",
-              "inputs": "@string(outputs('Compose_Batch'))"
+              }
             }
           },
           "runAfter": {
@@ -695,27 +694,12 @@
               "Succeeded"
             ]
           },
-          "expression": "@greaterOrEquals(variables('BatchIndex'),variables('BatchTotalCount'))",
-          "limit": {
-            "count": 60,
-            "timeout": "PT1H"
-          },
           "metadata": {
             "operationMetadataId": "20386213-9a5c-44ef-8f86-87beca21aa7a",
             "description": "🔄 Main batch processing loop that continues until all records are processed. Each iteration processes up to 500 records, applies them to the target system via wspApplyChanges, and increments the batch index. Includes error handling and prevents infinite loops with a 60-iteration limit and 1-hour timeout."
-          },
-          "type": "Until"
+          }
         },
         "ESP_-_Create_New_Backup_Snapshot_of_Source_View": {
-          "runAfter": {
-            "Log_Row_to_Dataverse_Table": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "backup-source-table",
-            "description": "🛡️ Creates a backup copy of the source table using wspBackupTable stored procedure. The backup table name follows the pattern [OriginalTable]_[TargetDB]_TEST for easy identification and rollback capabilities if needed."
-          },
           "type": "OpenApiConnection",
           "inputs": {
             "parameters": {
@@ -726,16 +710,24 @@
               "parameters/Suffix": "@concat('_',first(variables('FlowConfig')?['KeyMappings'])?['TargetDB'],'_TEST')"
             },
             "host": {
-              "connectionName": "shared_sql-2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql",
               "operationId": "ExecuteProcedure_V2",
-              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sql"
-            },
-            "authentication": "@parameters('$authentication')"
+              "connectionName": "shared_sql-2"
+            }
+          },
+          "runAfter": {
+            "Log_Row_to_Dataverse_Table": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "backup-source-table",
+            "description": "🛡️ Creates a backup copy of the source table using wspBackupTable stored procedure. The backup table name follows the pattern [OriginalTable]_[TargetDB]_TEST for easy identification and rollback capabilities if needed."
           }
         }
       }
     },
-    "templateName": ""
+    "templateName": null
   },
   "schemaVersion": "1.0.0.0"
 }
